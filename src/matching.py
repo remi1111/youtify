@@ -1,4 +1,4 @@
-# String matching for titles and artists
+""" Matching of titles artists and videos. """
 
 import yt_api
 from datetime import *

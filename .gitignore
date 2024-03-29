@@ -2,3 +2,4 @@
 *.pyo
 *.txt
 .env
+test.py
