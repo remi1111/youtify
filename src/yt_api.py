@@ -1,8 +1,9 @@
 """ Youtube API requests """
-import requests
 import json
 import sys
 import os
+
+import requests
 
 yt_api_key = os.getenv("YOUTUBE_API")
 
@@ -11,7 +12,11 @@ def api_call(page):
         Exits runtime upon failure.
         page: API call.
         returns: data from API call """
-    data = requests.get(page)
+    data = requests.get(page, timeout=10)
+    if data is None:
+        print("Youtube request timed out", file=sys.stderr)
+        sys.exit(101)
+
     if data.status_code != 200:
         print("Youtube request not successfull", file=sys.stderr)
         print(data.content, file=sys.stderr)
@@ -20,45 +25,84 @@ def api_call(page):
         return data
 
 def get_upload_list(channel_id):
-    data = api_call("https://www.googleapis.com/youtube/v3/channels?id=" + channel_id + "&key=" + yt_api_key + "&part=contentDetails,statistics").content
-    video_count = json.loads(data)["items"][0]["statistics"]["videoCount"]
-    print("videos: " + video_count)
+    """ Quick channel to user uploads. """
+    if channel_id[:2] != "UC":
+        print("Channel ID did not start with UC", file=sys.stderr)
+        sys.exit(1)
+    channel_id[2] = "U"
+    return channel_id
+
+def get_upload_list_call(channel_id, verbose=False):
+    """ Api call for channel to user uploads. """
+    if channel_id[:2] != "UC":
+        print("Channel ID did not start with UC", file=sys.stderr)
+        sys.exit(1)
+    data = api_call("https://www.googleapis.com/youtube/v3/channels?id=" +
+                    channel_id + "&key=" +
+                    yt_api_key + "&part=contentDetails,statistics").content
+
+    if verbose:
+        video_count = json.loads(data)["items"][0]["statistics"]["videoCount"]
+        print("videos: " + video_count)
     return json.loads(data)["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
-def get_video_list(playlist_id, video_array=[], page_token=None):
-    if(page_token):
-        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" + playlist_id + "&key=" + yt_api_key + "&part=snippet&maxResults=50&regionCode=nl&pageToken=" + page_token).content
+def get_video_list(playlist_id, video_array, page_token=None):
+    """ Retrieves a list of videos from a youtube playlist. """
+    if page_token:
+        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" +
+                        playlist_id + "&key=" + yt_api_key +
+                        "&part=snippet&maxResults=50&regionCode=nl&pageToken=" +
+                        page_token).content
     else:
-        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" + playlist_id + "&key=" + yt_api_key + "&part=snippet&maxResults=50&regionCode=nl").content
+        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" +
+                        playlist_id + "&key=" + yt_api_key +
+                        "&part=snippet&maxResults=50&regionCode=nl").content
+
     new_array = video_array + json.loads(data)["items"]
+
     try:
         page_token = json.loads(data)["nextPageToken"]
-    except:
+    except KeyError:
         return new_array
+
     return get_video_list(playlist_id, new_array, page_token)
 
 def get_playlist_by_channel(channel_id):
-    data = api_call("https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&channelId="+ channel_id +"&maxResults=50&key=" + yt_api_key).content
-    # print(data)
+    """ Retrievs all playlists of a channel. """
+    data = api_call("https://youtube.googleapis.com/youtube/v3/" +
+                    "playlists?part=snippet%2CcontentDetails&channelId=" +
+                    channel_id +"&maxResults=50&key=" + yt_api_key).content
+    return data
 
 def get_id_from_playlist(playlist_id):
-    data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails,snippet,id&playlistId=" + playlist_id + "&key=" + yt_api_key).content
-    # print(data)
+    """ No idea """
+    data = api_call("https://www.googleapis.com/youtube/v3/" +
+                    "playlistItems?part=contentDetails,snippet,id&playlistId=" +
+                    playlist_id + "&key=" + yt_api_key).content
+    return data
 
 
 def video_is_valid(videoid):
-    data = api_call("https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails&regionCode=NL&id=" + videoid + "&key=" + yt_api_key)
+    """ Return a boolean if the video is valid in a country. """
+    data = api_call("https://youtube.googleapis.com/youtube/v3/" +
+                    "videos?part=contentDetails&regionCode=NL&id=" +
+                    videoid + "&key=" + yt_api_key)
     jsondat = json.loads(data.content)
     cont = jsondat['items'][0]['contentDetails']
     if 'regionRestriction' in cont:
-        if 'allowed' in cont['regionRestriction'] and 'NL' not in cont['regionRestriction']['allowed']:
-            return 0
-        if 'blocked' in cont['regionRestriction'] and 'NL' in cont['regionRestriction']['blocked']:
-            return 0
-    return 1
+        if('allowed' in cont['regionRestriction'] and
+           'NL' not in cont['regionRestriction']['allowed']):
+            return False
+        if('blocked' in cont['regionRestriction'] and
+           'NL' in cont['regionRestriction']['blocked']):
+            return False
+    return True
 
 def return_blocked(videoid):
-    data = api_call("https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails&regionCode=NL&id=" + videoid + "&key=" + yt_api_key)
+    """ Prints a list of allowed or blocked countries. """
+    data = api_call("https://youtube.googleapis.com/youtube/v3/" +
+                    "videos?part=contentDetails&regionCode=NL&id=" +
+                    videoid + "&key=" + yt_api_key)
     jsondat = json.loads(data.content)
     cont = jsondat['items'][0]['contentDetails']
     if 'regionRestriction' in cont:
@@ -68,23 +112,37 @@ def return_blocked(videoid):
         if 'blocked' in cont['regionRestriction']:
             print("blocked")
             print(cont['regionRestriction']['blocked'])
-    return 0
+    return False
 
-def search_channel(channel):
-    data = api_call("https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=" + channel + "&key=" + yt_api_key)
-    # print(json.loads(data.content))
+def search_channel(channel, verbose=False):
+    """ Returns the channel ID of the first result. """
+    data = api_call("https://www.googleapis.com/youtube/v3/" +
+                    "search?part=snippet&type=channel&q=" +
+                    channel + "&key=" + yt_api_key)
+
+    if verbose:
+        print(json.loads(data.content))
+
     return json.loads(data.content)['items'][0]['id']['channelId']
 
-def video_is_valid_and_statistics(videoid):
-    data = api_call("https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&regionCode=NL&id=" + videoid + "&key=" + yt_api_key)
+def video_is_valid_and_statistics(videoid, verbose=False):
+    """ Returns a tuple of if a video is valid and its viewcount. """
+    data = api_call("https://youtube.googleapis.com/youtube/v3/" +
+                    "videos?part=contentDetails,statistics&regionCode=NL&id=" +
+                    videoid + "&key=" + yt_api_key)
     jsondat = json.loads(data.content)
-    print(jsondat)
-    cont = jsondat['items'][0]['contentDetails']
-    Vcount = jsondat['items'][0]['statistics']['viewCount']
-    if 'regionRestriction' in cont:
-        if 'allowed' in cont['regionRestriction'] and 'NL' not in cont['regionRestriction']['allowed']:
-            return [0, Vcount]
-        if 'blocked' in cont['regionRestriction'] and 'NL' in cont['regionRestriction']['blocked']:
-            return [0, Vcount]
-    return [1, Vcount]
 
+    if verbose:
+        print(jsondat)
+
+    cont = jsondat['items'][0]['contentDetails']
+    view_count = jsondat['items'][0]['statistics']['viewCount']
+
+    if 'regionRestriction' in cont:
+        if('allowed' in cont['regionRestriction'] and
+           'NL' not in cont['regionRestriction']['allowed']):
+            return [False, view_count]
+        if('blocked' in cont['regionRestriction'] and
+           'NL' in cont['regionRestriction']['blocked']):
+            return [False, view_count]
+    return [True, view_count]
