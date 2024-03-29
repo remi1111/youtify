@@ -23,7 +23,7 @@ def get_songlist_artist(data, artist):
 
 def get_videoid_per_artist(artistchannelid, songlist, artist):
     """ Creates a dictionary of songs per artist. """
-    ytdata = analyze.analyze_list(yt_api.get_video_list(yt_api.get_upload_list(artistchannelid)))
+    ytdata = analyze.analyze_list(yt_api.get_video_list(yt_api.get_upload_list(artistchannelid),[]))
     dupedict = {}
     for song in ytdata:
         name = string_clean(song['song name'])
