@@ -4,10 +4,10 @@ Spotify playlist to youtube videos.
 
 # Dependencies:
 
-yt-dlp
+yt-dlp <br />
 dotenv
 
 # Before Running:
 
-Set path:
+Set path: <br />
 export PYTHONPATH='/{path to folder}/youtify/src'
