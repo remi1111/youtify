@@ -13,8 +13,9 @@ def api_call(page):
         returns: data from API call """
     data = requests.get(page)
     if data.status_code != 200:
-        print(data.content)
-        sys.exit(0)
+        print("Youtube request not successfull", file=sys.stderr)
+        print(data.content, file=sys.stderr)
+        sys.exit(501)
     else:
         return data
 

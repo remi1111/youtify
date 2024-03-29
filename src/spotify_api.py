@@ -1,15 +1,17 @@
 """ Spotify API requests. """
-import requests
 import base64
 import json
-from secrets import *
+# from secrets import *
 import os
+import sys
 
-# Retrieve Spotify session token.
+import requests
+
 def get_token():
+    """ Retrieve spotify api token """
     # Retrieve ID and secret from .env
-    clientId = os.getenv("SPOTIFY_CLIENT_ID")
-    clientSecret = os.getenv("SPOTIFY_CLIENT_SECRET")
+    client_id = os.getenv("SPOTIFY_CLIENT_ID")
+    client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
     # Authorization
     url = "https://accounts.spotify.com/api/token"
@@ -17,27 +19,35 @@ def get_token():
     data = {}
 
     # Encode as Base64
-    message = f"{clientId}:{clientSecret}"
-    messageBytes = message.encode('ascii')
-    base64Bytes = base64.b64encode(messageBytes)
-    base64Message = base64Bytes.decode('ascii')
+    message = f"{client_id}:{client_secret}"
+    message_bytes = message.encode('ascii')
+    base64_bytes = base64.b64encode(message_bytes)
+    base64_message = base64_bytes.decode('ascii')
 
-    headers['Authorization'] = f"Basic {base64Message}"
+    headers['Authorization'] = f"Basic {base64_message}"
     data['grant_type'] = "client_credentials"
 
-    r = requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data, timeout=10)
+    if r is None:
+        print("Spotify request timed out", file=sys.stderr)
+        sys.exit(101)
 
     token = r.json()['access_token']
     return token
 
 
-def get_playlist(playlist_id, token, mylist=[], playlistUrl=None):
-    if not playlistUrl:
-        playlistUrl = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+def get_playlist(playlist_id, token, mylist, playlist_url=None):
+    """ Retrieve playlist form spotify """
+    if not playlist_url:
+        playlist_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
     headers = {
         "Authorization": "Bearer " + token
     }
-    res = requests.get(url=playlistUrl, headers=headers)
+    res = requests.get(url=playlist_url, headers=headers, timeout=10)
+    if res is None:
+        print("Spotify request timed out", file=sys.stderr)
+        sys.exit(101)
+
     json_data = json.loads(res.content)
 
     a_list = analyze_playlist(json_data)
@@ -50,18 +60,23 @@ def get_playlist(playlist_id, token, mylist=[], playlistUrl=None):
     return get_playlist(playlist_id, token, newlist, next_url)
 
 def analyze_playlist(json_data):
+    """ Stores data for each song in a dictionary. """
     mylist = []
     for song in json_data['items']:
-        # album_artist = song['track']['album']['artists'][0]['name']
-        # album_name = song['track']['album']['name']
-        # release_date = song['track']['album']['release_date']
+        album_artist = song['track']['album']['artists'][0]['name']
+        album_name = song['track']['album']['name']
+        release_date = song['track']['album']['release_date']
         song_artist = song['track']['artists'][0]['name']
         song_name = song['track']['name']
-        song_dict = {'song artist': song_artist, 'song name': song_name}
-        # song_dict = {'album artist': album_artist, 'album name': album_name, 'release date': release_date, 'song artist': song_artist, 'song name': song_name}
+        song_dict = {'album artist': album_artist,
+                     'album name': album_name,
+                     'release date': release_date,
+                     'song artist': song_artist,
+                     'song name': song_name}
         mylist.append(song_dict)
     return mylist
 
-def write_to_file(dict, filename):
-    with open(filename, 'w') as file:
-        file.write(json.dumps(dict))
+def write_to_file(song_dict, filename):
+    """ Write a playlist dictionary to a file. """
+    with open(filename, 'w', encoding="utf-8") as file:
+        file.write(json.dumps(song_dict))
