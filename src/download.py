@@ -3,11 +3,14 @@ import subprocess
 
 def download_ids(id_dict, verbose=False):
     """ Download all songs from a dictionary. """
-    for song in id_dict:
-        title =  "~/audio/" + song['song artist'] + " - " + song['song name'] + ".%(ext)s"
+    for key in id_dict:
+        song = id_dict[key]
+        if verbose:
+            print(song)
+        title =  "~/audio/" + song['song artist'] + " - " + song['song name youtube'] + ".%(ext)s"
         page = "https://www.youtube.com/watch?v=" + song['video id']
         if verbose:
-            print(song['song name']  + "\t id:  " + song['video id'])
+            print(song['song name youtube']  + "\t id:  " + song['video id'])
         subprocess.run(["yt-dlp",
                         '-x',
                         '-f',
