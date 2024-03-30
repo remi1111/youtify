@@ -20,33 +20,34 @@ def main():
         usage()
         sys.exit(3)
     for opt, _ in opts:
-        if opt in ("-h", "--help"): # Help message
-            usage()
-        elif opt in ("-v", "--verbose"):
-            os.environ["VERBOSE"] = "1"
-        elif opt in ("-F", "--to-file"):
-            if len(args) != 2:
-                print(f"{opt} requires 2 parameters", file=sys.stderr)
-                sys.exit(3)
-            exec_func.playlist_to_file(args[0], args[1])
-        elif opt in ("-L", "--to-list"):
-            if len(args) != 2:
-                print(f"{opt} requires 2 parameters", file=sys.stderr)
-                sys.exit(3)
-            exec_func.playlist_to_yt_list(args[0], args[1])
-        elif opt in ("-D", "--to-dict"):
-            if len(args) != 2:
-                print(f"{opt} requires 2 parameters", file=sys.stderr)
-                sys.exit(3)
-            exec_func.playlist_to_yt_dict(args[0], args[1])
-        elif opt in ("-f", "--full"):
-            if len(args) != 1:
-                print(f"{opt} requires 1 parameter", file=sys.stderr)
-                sys.exit(3)
-            exec_func.full(args[0])
-        else:
-            print("unhandled option", file=sys.stderr)
-            sys.exit(-1)
+        match opt:
+            case "-h" | "--help":
+                usage()
+            case "-v" | "--verbose":
+                os.environ["VERBOSE"] = "1"
+            case "-F" | "--to-file":
+                if len(args) != 2:
+                    print(f"{opt} requires 2 parameters", file=sys.stderr)
+                    sys.exit(3)
+                exec_func.playlist_to_file(args[0], args[1])
+            case "-L" | "--to-list":
+                if len(args) != 2:
+                    print(f"{opt} requires 2 parameters", file=sys.stderr)
+                    sys.exit(3)
+                exec_func.playlist_to_yt_list(args[0], args[1])
+            case "-D" | "--to-dict":
+                if len(args) != 2:
+                    print(f"{opt} requires 2 parameters", file=sys.stderr)
+                    sys.exit(3)
+                exec_func.playlist_to_yt_dict(args[0], args[1])
+            case "-f" | "--full":
+                if len(args) != 1:
+                    print(f"{opt} requires 1 parameter", file=sys.stderr)
+                    sys.exit(3)
+                exec_func.full(args[0])
+            case _:
+                print("unhandled option", file=sys.stderr)
+                sys.exit(-1)
 
 def usage():
     """ Prints how to use the file. """
