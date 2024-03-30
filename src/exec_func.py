@@ -5,6 +5,7 @@ import os
 import spotify_api
 import get_avs
 import download
+import metadata
 # import yt_api
 
 def write_to_file(song_dict, filename):
@@ -57,3 +58,4 @@ def full(playlist):
     dict1 = spotify_api.get_playlist(playlist, token, [])
     mydict = get_avs.get_dict_spotify(dict1, verbose)
     download.download_ids(mydict, verbose)
+    metadata.tag_all(mydict)
