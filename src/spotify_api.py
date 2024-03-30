@@ -65,6 +65,7 @@ def analyze_playlist(json_data):
         album_artist = song['track']['album']['artists'][0]['name']
         album_name = song['track']['album']['name']
         release_date = song['track']['album']['release_date']
+        release_year = song['track']['album']['release_date'][:4]
         song_artist = song['track']['artists'][0]['name']
         song_name = song['track']['name']
         track_num = song['track']['track_number']
@@ -74,6 +75,7 @@ def analyze_playlist(json_data):
         song_dict = {'album artist': album_artist,
                      'album name': album_name,
                      'release date': release_date,
+                     'release year': release_year,
                      'song artist': song_artist,
                      'song name': song_name,
                      'track num': track_num,
