@@ -1,8 +1,9 @@
+""" Retrieve information from youtube. """
 import yt_api
 
 def get_dict_channel(channel_id):
     """ Get dictionary of info for each song from a channel"""
-    video_list = yt_api.get_video_list(yt_api.get_upload_list(channel_id))
+    video_list = yt_api.get_video_list(yt_api.get_upload_list(channel_id), [])
     artist = video_list[0]['snippet']['channelTitle'].replace(" - Topic", "")
     print(artist)
     songlist = []
