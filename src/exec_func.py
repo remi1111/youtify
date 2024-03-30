@@ -48,7 +48,7 @@ def playlist_to_yt_dict(playlist, filename=None):
         print(mydict)
 
 def full(playlist):
-    """"""
+    """ Downloads and tags all songs from a spotify playlist. """
     verbose = False
     if os.environ["VERBOSE"] == "1":
         verbose = True
