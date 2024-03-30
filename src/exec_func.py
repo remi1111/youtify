@@ -1,5 +1,6 @@
 """ Executable functions for main.py """
 import json
+import os
 
 import spotify_api
 import get_avs
@@ -34,9 +35,12 @@ def playlist_to_yt_dict(playlist, filename=None):
     """ Turns a spotify playlist into a dictionary.
         This dictionary contains relevant info and their youtube ids.
         If no filename is given print to console. """
+    verbose = False
+    if os.environ["VERBOSE"] == "1":
+        verbose = True
     token = spotify_api.get_token()
     dict1 = spotify_api.get_playlist(playlist, token, [])
-    mydict = get_avs.get_dict_spotify(dict1)
+    mydict = get_avs.get_dict_spotify(dict1, verbose)
     if filename:
         write_to_file(mydict, filename)
     else:
