@@ -8,6 +8,7 @@ Spotify playlist to youtube videos.
 
 dotenv <br />
 requests <br />
+eyeD3
 
 ## Other Required Projects:
 
