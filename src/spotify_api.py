@@ -75,8 +75,3 @@ def analyze_playlist(json_data):
                      'song name': song_name}
         mylist.append(song_dict)
     return mylist
-
-def write_to_file(song_dict, filename):
-    """ Write a playlist dictionary to a file. """
-    with open(filename, 'w', encoding="utf-8") as file:
-        file.write(json.dumps(song_dict))
