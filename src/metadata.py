@@ -18,6 +18,15 @@ def tag_file(filename, mydict, genre):
 
     audiofile.tag.save()
 
+def tag_all(mydict, verbose=False):
+    """ Tags all songs in mydict. """
+    for key in mydict:
+        song = mydict[key]
+        if verbose:
+            print(song)
+        filename =  "./audio/" + song['song artist'] + " - " + song['song name youtube'] + ".mp3"
+        tag_file(filename, mydict, "K-pop")
+
 # if __name__ == "__main__":
 #     filename = "./audio/YOUNG POSSE - ROTY.mp3"
 #     mydict = {'artist name': 'YOUNG POSSE',
