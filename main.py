@@ -14,7 +14,7 @@ def main():
         print(err, file=sys.stderr)  # will print something like "option -a not recognized"
         usage()
         sys.exit(3)
-    for opt, arg in opts:
+    for opt, _ in opts:
         if opt in ("-h", "--help"): # Help message
             usage()
         elif opt in ("-F", "--to-file"):
@@ -40,8 +40,10 @@ def usage():
     """ Prints how to use the file. """
     print("-h, --help: Prints this message.")
     print("-F, --to-file <1> <2>: outputs spotify playlist <1> info to specified file <2>.")
-    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube video ID's to specified file <2>.")
-    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant info and their \n\t\t\t youtube video ID's to specified file <2>.")
+    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube video\
+ID's to specified file <2>.")
+    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant\
+info and their \n\t\t\t youtube video ID's to specified file <2>.")
 
 if __name__ == "__main__":
     main()
