@@ -5,7 +5,7 @@ def tag_file(filename, mydict, genre):
     """ Tags a song with info from mydict. """
     audiofile = eyed3.load(filename)
 
-    audiofile.tag.artist = mydict['artist name']
+    audiofile.tag.artist = mydict['song artist']
     audiofile.tag.album = mydict['album name']
     audiofile.tag.album_artist = mydict['album artist']
     audiofile.tag.title = mydict['song name spotify']
