@@ -4,6 +4,7 @@ import os
 
 import spotify_api
 import get_avs
+import download
 # import yt_api
 
 def write_to_file(song_dict, filename):
@@ -45,3 +46,14 @@ def playlist_to_yt_dict(playlist, filename=None):
         write_to_file(mydict, filename)
     else:
         print(mydict)
+
+def full(playlist):
+    """"""
+    verbose = False
+    if os.environ["VERBOSE"] == "1":
+        verbose = True
+
+    token = spotify_api.get_token()
+    dict1 = spotify_api.get_playlist(playlist, token, [])
+    mydict = get_avs.get_dict_spotify(dict1, verbose)
+    download.download_ids(mydict, verbose)

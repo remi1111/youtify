@@ -10,8 +10,10 @@ def main():
     load_dotenv() # Load .env file
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                    "hFLDv",
-                                    ["help","to-file","to-list", "--to-dict", "--verbose"])
+                                    "hFLDvf",
+                                    ["help", "to-file",
+                                     "to-list", "--to-dict",
+                                     "--verbose", "--full"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err, file=sys.stderr)  # will print something like "option -a not recognized"
@@ -37,6 +39,11 @@ def main():
                 print(f"{opt} requires 2 parameters", file=sys.stderr)
                 sys.exit(3)
             exec_func.playlist_to_yt_dict(args[0], args[1])
+        elif opt in ("-f", "--full"):
+            if len(args) != 1:
+                print(f"{opt} requires 1 parameter", file=sys.stderr)
+                sys.exit(3)
+            exec_func.full(args[0])
         else:
             print("unhandled option", file=sys.stderr)
             sys.exit(-1)
@@ -46,10 +53,12 @@ def usage():
     print("-h, --help: Prints this message.")
     print("-v, --verbose: Prints important output during runtime.")
     print("-F, --to-file <1> <2>: outputs spotify playlist <1> info to specified file <2>.")
-    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube video\
+    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube video \
 ID's to specified file <2>.")
-    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant\
+    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant \
 info and their \n\t\t\t youtube video ID's to specified file <2>.")
+    print("-f, --full <1>: Download audio files for all songs in \
+spotify playlist <1> \n\t\t\t and put them in the audio folder.")
 
 if __name__ == "__main__":
     main()
