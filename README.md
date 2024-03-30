@@ -4,11 +4,13 @@ Spotify playlist to youtube videos.
 
 # Dependencies:
 
-Python Packages: <br />
+## Python Packages:
+
 dotenv <br />
 requests <br />
-<br />
-Other Projects: <br />
+
+## Other Required Projects:
+
 yt-dlp
 
 # Before Running:
