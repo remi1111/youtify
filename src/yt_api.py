@@ -114,11 +114,11 @@ def return_blocked(videoid):
             print(cont['regionRestriction']['blocked'])
     return False
 
-def search_channel(channel, verbose=False):
+def search_channel(channel_name, verbose=False):
     """ Returns the channel ID of the first result. """
     data = api_call("https://www.googleapis.com/youtube/v3/" +
                     "search?part=snippet&type=channel&q=" +
-                    channel + "&key=" + yt_api_key)
+                    channel_name + "&key=" + yt_api_key)
 
     if verbose:
         print(json.loads(data.content))
