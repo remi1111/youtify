@@ -1,7 +1,6 @@
 """ Spotify API requests. """
 import base64
 import json
-# from secrets import *
 import os
 import sys
 
