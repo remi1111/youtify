@@ -1,6 +1,4 @@
 """ Analyzing results from API calls. """
-from datetime import date
-
 import matching
 import yt_api
 
@@ -55,7 +53,7 @@ def analyze_list(json_list):
     # print(count)
     return mylist
 
-def get_songlist_artist(data, artist):
+def get_clean_songlist_artist(data, artist):
     """ Creates a list of songnames for an artist """
     songlist = []
     for song in data:
@@ -63,26 +61,64 @@ def get_songlist_artist(data, artist):
             songlist.append(matching.string_clean(song['song name']))
     return songlist
 
-def str_date(strng):
-    """ Transforms a string to date object. """
-    obj = date(int(strng[0:4]),
-                int(strng[5:7]),
-                int(strng[8:10]))
-    return obj
+def get_songlist_artist(data, artist):
+    """ Creates a list of songnames for an artist """
+    songlist = []
+    for song in data:
+        if song['song artist'] == artist:
+            songlist.append(song['song name'])
+    return songlist
 
-def get_videoid_per_artist(artistchannelid, songlist, artist):
+def get_dict_artist(data, artist):
+    """ Creates a list of dicts of songs for an artist """
+    mydict = {}
+    for song in data:
+        if song['song artist'] == artist:
+            mydict[matching.string_clean(song['song name'])] = song
+    return mydict
+
+def get_yt_dict_artist(artist_channel_id, verbose=False):
+    """ Retrieves the list of uploads (songs) from a channel. """
+    return analyze_list(
+                yt_api.get_video_list(
+                    yt_api.get_upload_list_call(
+                        artist_channel_id, verbose),
+                    []))
+
+def get_videoid_per_artist(artist_channel_id, songlist, artist):
     """ Creates a dictionary of songs per artist. """
-    ytdata = analyze_list(yt_api.get_video_list(yt_api.get_upload_list(artistchannelid),[]))
+    ytdata = get_yt_dict_artist(artist_channel_id)
     dupedict = {}
     for song in ytdata:
         name = matching.string_clean(song['song name'])
         if name in songlist:
             if yt_api.video_is_valid(song['videoid']):
-                dat = str_date(song['published on'])
+                dat = matching.str_date(song['published on'])
                 if name not in dupedict:
                     dupedict[name] = [dat, song['videoid'], artist, song['song name']]
                 elif dat < dupedict[name][0] :
                     dupedict[name] = [dat, song['videoid'], artist, song['song name']]
+    return dupedict
+
+def get_videoid_dict_per_artist(artist_channel_id, songlist, spot_dict, artist, verbose=False):
+    """ Creates a dictionary of songs per artist. """
+    ytdata = get_yt_dict_artist(artist_channel_id, verbose)
+    dupedict = {}
+    for song in ytdata:
+        name = matching.string_clean(song['song name'])
+        if name in songlist:
+            if yt_api.video_is_valid(song['videoid']):
+                dat = matching.str_date(song['published on'])
+                if name not in dupedict or dat < matching.str_date(dupedict[name]["dat"]):
+                    dupedict[name] = {'dat': song['published on'],
+                                        'video id': song['videoid'],
+                                        'album artist': spot_dict[name]['album artist'],
+                                        'album name': spot_dict[name]['album name'],
+                                        'release date': spot_dict[name]['release date'],
+                                        'song artist': artist,
+                                        'song name spotify': spot_dict[name]['song name'],
+                                        'song name youtube': song['song name']}
+
     return dupedict
 
 def songs_not_found(songlist, id_dict):

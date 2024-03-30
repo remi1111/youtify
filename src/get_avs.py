@@ -1,5 +1,6 @@
 """ Retrieve information from youtube. """
 import yt_api
+import analyze
 
 def get_dict_channel(channel_id):
     """ Get dictionary of info for each song from a channel"""
@@ -28,7 +29,7 @@ def get_dict_channel(channel_id):
             songlist.append(song_dict)
     return songlist
 
-def get_dict_spotify(mydict):
+def get_dict_spotify(mydict, verbose=False):
     """ Get dictionary of info from a
         spotify playlist through youtube"""
 
@@ -37,5 +38,30 @@ def get_dict_spotify(mydict):
     for song in mydict:
         set_artists.add(song['song artist'])
 
-    # TOTO
-    return mydict
+    if verbose:
+        count_artists = len(set_artists)
+        print(f"Artists: {count_artists}")
+
+    for artist in set_artists:
+            # artist =
+            songlist = analyze.get_clean_songlist_artist(mydict, artist)
+            spotify_dict = analyze.get_dict_artist(mydict, artist)
+
+            artistchannel = artist + " - Topic"
+            channelid = yt_api.search_channel(artistchannel, verbose)
+            # channelid =
+
+            yt_data = analyze.get_videoid_dict_per_artist(channelid, songlist, spotify_dict, artist, verbose)
+
+            not_found_list = analyze.songs_not_found(songlist, yt_data)
+
+            count = len(songlist)
+            found = len(songlist) - len(not_found_list)
+
+
+            if verbose:
+                print(f"Artist: {artist}")
+                print("count = " + str(count) + ",  found = " + str(found))
+                print("not found:", not_found_list)
+
+    return yt_data
