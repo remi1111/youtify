@@ -68,11 +68,17 @@ def analyze_playlist(json_data):
         song_artist = song['track']['artists'][0]['name']
         song_name = song['track']['name']
         track_num = song['track']['track_number']
+        disc_num = song['track']['disc_number']
+        track_total = song['track']['album']['total_tracks']
+        disc_total = 1
         song_dict = {'album artist': album_artist,
                      'album name': album_name,
                      'release date': release_date,
                      'song artist': song_artist,
                      'song name': song_name,
-                     'track num': track_num}
+                     'track num': track_num,
+                     'track total': track_total,
+                     'disc num': disc_num,
+                     'disc total': disc_total}
         mylist.append(song_dict)
     return mylist
