@@ -117,7 +117,8 @@ def get_videoid_dict_per_artist(artist_channel_id, songlist, spot_dict, artist, 
                                         'release date': spot_dict[name]['release date'],
                                         'song artist': artist,
                                         'song name spotify': spot_dict[name]['song name'],
-                                        'song name youtube': song['song name']}
+                                        'song name youtube': song['song name'],
+                                        'track num': song['track num']}
 
     return dupedict
 
