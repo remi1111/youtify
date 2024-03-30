@@ -26,17 +26,3 @@ def tag_all(mydict, verbose=False):
             print(song)
         filename =  "./audio/" + song['song artist'] + " - " + song['song name youtube'] + ".mp3"
         tag_file(filename, song, "K-pop")
-
-# if __name__ == "__main__":
-#     filename = "./audio/YOUNG POSSE - ROTY.mp3"
-#     mydict = {'artist name': 'YOUNG POSSE',
-#               'album name': 'XXL EP',
-#               'album artist': 'YOUNG POSSE',
-#               'song name spotify': 'ROTY',
-#               'release year': '2024',
-#               'track num': '4',
-#               'track total': '5',
-#               'disc num': '1',
-#               'disc total': '1'}
-#     genre = "K-pop"
-#     tag_file(filename, mydict, genre)
