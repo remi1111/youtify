@@ -7,7 +7,7 @@ def download_ids(id_dict, verbose=False):
         song = id_dict[key]
         if verbose:
             print(song)
-        title =  "~/audio/" + song['song artist'] + " - " + song['song name youtube'] + ".%(ext)s"
+        title =  "./audio/" + song['song artist'] + " - " + song['song name youtube'] + ".%(ext)s"
         page = "https://www.youtube.com/watch?v=" + song['video id']
         if verbose:
             print(song['song name youtube']  + "\t id:  " + song['video id'])
