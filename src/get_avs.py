@@ -43,25 +43,27 @@ def get_dict_spotify(mydict, verbose=False):
         print(f"Artists: {count_artists}")
 
     for artist in set_artists:
-            # artist =
-            songlist = analyze.get_clean_songlist_artist(mydict, artist)
-            spotify_dict = analyze.get_dict_artist(mydict, artist)
+        songlist = analyze.get_clean_songlist_artist(mydict, artist)
+        spotify_dict = analyze.get_dict_artist(mydict, artist)
 
-            artistchannel = artist + " - Topic"
-            channelid = yt_api.search_channel(artistchannel, verbose)
-            # channelid =
+        artistchannel = artist + " - Topic"
+        channelid = yt_api.search_channel(artistchannel, verbose)
 
-            yt_data = analyze.get_videoid_dict_per_artist(channelid, songlist, spotify_dict, artist, verbose)
+        yt_data = analyze.get_videoid_dict_per_artist(channelid,
+                                                      songlist,
+                                                      spotify_dict,
+                                                      artist,
+                                                      verbose)
 
-            not_found_list = analyze.songs_not_found(songlist, yt_data)
+        not_found_list = analyze.songs_not_found(songlist, yt_data)
 
-            count = len(songlist)
-            found = len(songlist) - len(not_found_list)
+        count = len(songlist)
+        found = len(songlist) - len(not_found_list)
 
 
-            if verbose:
-                print(f"Artist: {artist}")
-                print("count = " + str(count) + ",  found = " + str(found))
-                print("not found:", not_found_list)
+        if verbose:
+            print(f"Artist: {artist}")
+            print("count = " + str(count) + ",  found = " + str(found))
+            print("not found:", not_found_list)
 
     return yt_data

@@ -9,7 +9,9 @@ def main():
     """ Main function. """
     load_dotenv() # Load .env file
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hFLDv", ["help","to-file","to-list", "--to-dict", "--verbose"])
+        opts, args = getopt.getopt(sys.argv[1:],
+                                    "hFLDv",
+                                    ["help","to-file","to-list", "--to-dict", "--verbose"])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err, file=sys.stderr)  # will print something like "option -a not recognized"

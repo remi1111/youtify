@@ -126,6 +126,9 @@ def take_topic(json_data, verbose=False):
             print(channel_name)
         if "Topic" in channel_name:
             return item['id']['channelId']
+    print("Could not find topic channel", file=sys.stderr)
+    sys.exit(10)
+
 
 def search_channel(channel_name, verbose=False):
     """ Returns the channel ID of the first result. """
