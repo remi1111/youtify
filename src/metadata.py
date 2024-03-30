@@ -25,7 +25,7 @@ def tag_all(mydict, verbose=False):
         if verbose:
             print(song)
         filename =  "./audio/" + song['song artist'] + " - " + song['song name youtube'] + ".mp3"
-        tag_file(filename, mydict, "K-pop")
+        tag_file(filename, song, "K-pop")
 
 # if __name__ == "__main__":
 #     filename = "./audio/YOUNG POSSE - ROTY.mp3"
