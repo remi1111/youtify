@@ -1,12 +1,13 @@
 """ Downloading of songs through yt-dlp """
 import subprocess
 
-def download_ids(id_dict):
+def download_ids(id_dict, verbose=False):
     """ Download all songs from a dictionary. """
     for song in id_dict:
-        title =  "~/audio/" + id_dict[song][2] + " - " + id_dict[song][3] + ".%(ext)s"
-        page = "https://www.youtube.com/watch?v=" + id_dict[song][1]
-        print(id_dict[song][3]  + "\t id:  " + id_dict[song][1])
+        title =  "~/audio/" + song['song artist'] + " - " + song['song name'] + ".%(ext)s"
+        page = "https://www.youtube.com/watch?v=" + song['video id']
+        if verbose:
+            print(song['song name']  + "\t id:  " + song['video id'])
         subprocess.run(["yt-dlp",
                         '-x',
                         '-f',
