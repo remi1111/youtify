@@ -19,10 +19,14 @@ def main():
         print(err, file=sys.stderr)  # will print something like "option -a not recognized"
         usage()
         sys.exit(3)
+    if opts is None:
+        usage()
+        sys.exit(0)
     for opt, _ in opts:
         match opt:
             case "-h" | "--help":
                 usage()
+                sys.exit(0)
             case "-v" | "--verbose":
                 os.environ["VERBOSE"] = "1"
             case "-F" | "--to-file":
