@@ -8,6 +8,10 @@ from src import exec_func
 def main():
     """ Main function. """
     load_dotenv() # Load .env file
+    if os.getenv("YOUTUBE_API") is None or os.getenv("SPOTIFY_CLIENT_SECRET") is None or os.getenv("SPOTIFY_CLIENT_ID") is None or os.getenv("VERBOSE") is None:
+        print("This is probably the first time you run this, please follow the README.")
+        print("If you followed the README and still get this error, please let me know on github.")
+        sys.exit(4)
     try:
         opts, args = getopt.getopt(sys.argv[1:],
                                     "hFLDvf",
