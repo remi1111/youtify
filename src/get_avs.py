@@ -1,6 +1,6 @@
 """ Retrieve information from youtube. """
-import yt_api
-import analyze
+from src import yt_api
+from src import analyze
 
 def get_dict_channel(channel_id):
     """ Get dictionary of info for each song from a channel"""

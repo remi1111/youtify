@@ -1,6 +1,6 @@
 """ Analyzing results from API calls. """
-import matching
-import yt_api
+from src import matching
+from src import yt_api
 
 def analyze_list(json_list):
     """ Analyzing JSON result from youtube api call.

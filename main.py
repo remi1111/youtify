@@ -3,7 +3,7 @@ import sys
 import os
 import getopt
 from dotenv import load_dotenv
-import exec_func
+from src import exec_func
 
 def main():
     """ Main function. """

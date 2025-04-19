@@ -2,10 +2,10 @@
 import json
 import os
 
-import spotify_api
-import get_avs
-import download
-import metadata
+from src import spotify_api
+from src import get_avs
+from src import download
+from src import metadata
 # import yt_api
 
 def write_to_file(song_dict, filename):
