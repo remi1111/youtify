@@ -50,7 +50,7 @@ class PlaylistData:
     def __init__(self):
         self._auth = SpotifyAuth()
 
-    def get_playlist(self, playlist_id, playlist_url=None):
+    def get_playlist_data(self, playlist_id, playlist_url=None):
         """ Retrieve playlist form spotify """
         if not playlist_url:
             playlist_url = "https://api.spotify.com/v1/playlists/{}/tracks"
@@ -61,13 +61,13 @@ class PlaylistData:
             sys.exit(101)
 
         json_data = json.loads(res.content)
-        self.analyze_playlist(json_data)
+        self.analyze_playlist_data(json_data)
 
-        next_url = json_data.get('next')
+        next_url = json_data['next']
         if next_url:
-            self.get_playlist(playlist_id, next_url)
+            self.get_playlist_data(playlist_id, next_url)
 
-    def analyze_playlist(self, json_data):
+    def analyze_playlist_data(self, json_data):
         """ Stores data for each song in a SongData object. """
         for song in json_data['items']:
             album_artist = song['track']['album']['artists'][0]['name']
