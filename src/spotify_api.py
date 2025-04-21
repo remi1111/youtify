@@ -50,6 +50,7 @@ class PlaylistData:
     def __init__(self, playlist_id):
         self._auth = SpotifyAuth()
         self.playlist_id = playlist_id
+        self.get_playlist_data()
 
     def get_playlist_data(self, playlist_url=None):
         """ Retrieve playlist form spotify """
