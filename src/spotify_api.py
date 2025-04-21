@@ -20,7 +20,7 @@ class SongData:
     track_total: int = None
     disc_total: int = None
 
-    def __init__(self, song_dict):
+    def __init__(self, song_dict: str) -> None:
         self.album_artist = song_dict['track']['album']['artists'][0]['name']
         self.album_name = song_dict['track']['album']['name']
         self.release_date = song_dict['track']['album']['release_date']
@@ -62,12 +62,12 @@ class PlaylistData:
     song_list: list[SongData] = []
     playlist_id: str = None
 
-    def __init__(self, playlist_id):
+    def __init__(self, playlist_id: str) -> None:
         self._auth = SpotifyAuth()
         self.playlist_id = playlist_id
         self.get_playlist_data()
 
-    def get_playlist_data(self, playlist_url=None):
+    def get_playlist_data(self, playlist_url: str = None) -> None:
         """ Retrieve playlist form spotify """
         if not playlist_url:
             playlist_url = f"https://api.spotify.com/v1/playlists/{self.playlist_id}/tracks"
@@ -79,7 +79,7 @@ class PlaylistData:
         if next_url:
             self.get_playlist_data(next_url)
 
-    def analyze_playlist_data(self, json_data):
+    def analyze_playlist_data(self, json_data: str) -> None:
         """ Stores data for each song in a SongData object. """
         for song in json_data['items']:
             song_data = SongData(song)
@@ -105,13 +105,13 @@ class SpotifyAuth:
     """ Class for authentication on spotify. """
     _api_token: str = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.get_token()
         self._headers = {
             "Authorization": "Bearer " + self._api_token
         }
 
-    def get_token(self):
+    def get_token(self) -> None:
         """ Retrieve spotify api token. """
         # Retrieve ID and secret from .env
         client_id = os.getenv("SPOTIFY_CLIENT_ID")
@@ -138,7 +138,7 @@ class SpotifyAuth:
 
         self._api_token = r.json()['access_token']
 
-    def send_request(self, url):
+    def send_request(self, url: str) -> str:
         """ Send request to spotify api and return a json object. """
         res = requests.get(url=url, headers=self._headers, timeout=10)
         if res is None:
