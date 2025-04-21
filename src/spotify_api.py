@@ -70,7 +70,7 @@ class PlaylistData:
             self.song_list.append(song_data)
 
     def __str__(self):
-        return self.song_list
+        return str(self.song_list)
 
 
 class SpotifyAuth:
@@ -112,7 +112,7 @@ class SpotifyAuth:
 
     def send_request(self, url):
         """ Send request to spotify api and return a json object. """
-        res = requests.get(url=url, headers=self._auth._headers, timeout=10)
+        res = requests.get(url=url, headers=self._headers, timeout=10)
         if res is None:
             print("Spotify request timed out", file=sys.stderr)
             sys.exit(101)
