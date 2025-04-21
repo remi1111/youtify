@@ -98,7 +98,11 @@ class PlaylistData:
         return csv_str
 
     def __str__(self) -> str:
-        return str(self.song_list)
+        output = f"[{str(self.song_list[0])}"
+        for song in self.song_list[1:]:
+            output += ", " + str(song)
+        output += "]"
+        return output
 
 
 class SpotifyAuth:
