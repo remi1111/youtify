@@ -34,7 +34,22 @@ class SongData:
         if self.release_date:
             self.release_year = self.release_date[:4]
 
-    def __str__(self):
+    def get_data_as_dict(self) -> dict:
+        return {'album artist': self.album_artist,
+                'album name': self.album_name,
+                'release date': self.release_date,
+                'release year': self.release_year,
+                'song artist': self.song_artist,
+                'song name': self.song_name,
+                'track num': self.track_num,
+                'track total': self.track_total,
+                'disc num': self.disc_num,
+                'disc total': self.disc_total}
+
+    def get_data_as_csv(self) -> str:
+        return f"\"{self.song_artist}\";\"{self.song_name}\";\"{self.album_artist}\";\"{self.album_name}\";\"{self.release_date}\";\"{self.track_num}\";\"{self.track_total}\";\"{self.disc_num}\";\"{self.disc_total}\""
+
+    def __str__(self) -> str:
         return f"{self.song_artist} - {self.song_name}\n" \
                 f"Release Date: {self.release_date}\n" \
                 f"Album: {self.album_artist} - {self.album_name}\n" \
@@ -70,7 +85,19 @@ class PlaylistData:
             song_data = SongData(song)
             self.song_list.append(song_data)
 
-    def __str__(self):
+    def get_data_as_dict(self) -> list[dict]:
+        song_list = []
+        for song in self.song_list:
+            song_list.append(song.get_data_as_dict())
+        return song_list
+
+    def get_data_as_csv(self) -> str:
+        csv_str = "song_artist;song_name;album_artist;album_name;release_date;track_num;track_total;disc_num;disc_total"
+        for song in self.song_list:
+            csv_str += "\n" + song.get_data_as_csv()
+        return csv_str
+
+    def __str__(self) -> str:
         return str(self.song_list)
 
 
