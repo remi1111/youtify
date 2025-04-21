@@ -9,16 +9,16 @@ import requests
 
 class SongData:
     """ SongData class stores important song data. """
-    album_artist = None
-    album_name = None
-    release_date = None
-    release_year = None
-    song_artist = None
-    song_name = None
-    track_num = None
-    disc_num = None
-    track_total = None
-    disc_total = None
+    album_artist: str = None
+    album_name: str = None
+    release_date: str = None
+    release_year: int = None
+    song_artist: str = None
+    song_name: str = None
+    track_num: int = None
+    disc_num: int = None
+    track_total: int = None
+    disc_total: int = None
 
     def __init__(self, song_dict):
         self.album_artist = song_dict['track']['album']['artists'][0]['name']
@@ -32,7 +32,7 @@ class SongData:
         self.disc_total = 1
 
         if self.release_date:
-            self.release_year = self.release_date[:4]
+            self.release_year = int(self.release_date[:4])
 
     def get_data_as_dict(self) -> dict:
         return {'album artist': self.album_artist,
@@ -60,7 +60,7 @@ class SongData:
 class PlaylistData:
     """ Class that retrieves songs from spotify and puts them in song_list. """
     song_list: list[SongData] = []
-    playlist_id = None
+    playlist_id: str = None
 
     def __init__(self, playlist_id):
         self._auth = SpotifyAuth()
@@ -103,7 +103,7 @@ class PlaylistData:
 
 class SpotifyAuth:
     """ Class for authentication on spotify. """
-    _api_token = None
+    _api_token: str = None
 
     def __init__(self):
         self.get_token()
