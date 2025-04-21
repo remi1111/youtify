@@ -165,5 +165,5 @@ class SpotifyAuth:
 
     def check_expire(self):
         """ Check if token expired and refreshes token if that is the case. """
-        if datetime.now() > self._expires:
+        if datetime.now() < self._expires:
             self.get_token()
