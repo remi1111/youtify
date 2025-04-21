@@ -41,31 +41,27 @@ class SongData:
                 f"Track: {self.track_num}/{self.track_total}\n" \
                 f"Disc: {self.disc_num}/{self.disc_total}"
 
+
 class PlaylistData:
     """ Class that retrieves songs from spotify and puts them in song_list. """
     song_list: list[SongData] = []
     playlist_id = None
-    playlist_base_url = "https://api.spotify.com/v1/playlists/{}/tracks"
 
-    def __init__(self):
+    def __init__(self, playlist_id):
         self._auth = SpotifyAuth()
+        self.playlist_id = playlist_id
 
-    def get_playlist_data(self, playlist_id, playlist_url=None):
+    def get_playlist_data(self, playlist_url=None):
         """ Retrieve playlist form spotify """
         if not playlist_url:
-            playlist_url = "https://api.spotify.com/v1/playlists/{}/tracks"
+            playlist_url = f"https://api.spotify.com/v1/playlists/{self.playlist_id}/tracks"
 
-        res = requests.get(url=playlist_url, headers=self._auth._headers, timeout=10)
-        if res is None:
-            print("Spotify request timed out", file=sys.stderr)
-            sys.exit(101)
-
-        json_data = json.loads(res.content)
+        json_data = self._auth.send_request(playlist_url)
         self.analyze_playlist_data(json_data)
 
         next_url = json_data['next']
         if next_url:
-            self.get_playlist_data(playlist_id, next_url)
+            self.get_playlist_data(next_url)
 
     def analyze_playlist_data(self, json_data):
         """ Stores data for each song in a SongData object. """
@@ -113,3 +109,12 @@ class SpotifyAuth:
             sys.exit(101)
 
         self._api_token = r.json()['access_token']
+
+    def send_request(self, url):
+        """ Send request to spotify api and return a json object. """
+        res = requests.get(url=url, headers=self._auth._headers, timeout=10)
+        if res is None:
+            print("Spotify request timed out", file=sys.stderr)
+            sys.exit(101)
+
+        return json.loads(res.content)
