@@ -4,6 +4,7 @@ import json
 import os
 import sys
 
+from dotenv import load_dotenv
 import requests
 
 
@@ -104,8 +105,10 @@ class PlaylistData:
 class SpotifyAuth:
     """ Class for authentication on spotify. """
     _api_token: str = None
+    url = "https://accounts.spotify.com/api/token"
 
     def __init__(self) -> None:
+        load_dotenv() # For testing
         self.get_token()
         self._headers = {
             "Authorization": "Bearer " + self._api_token
@@ -118,25 +121,32 @@ class SpotifyAuth:
         client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
         # Authorization
-        url = "https://accounts.spotify.com/api/token"
-        headers = {}
         data = {}
-
-        # Encode as Base64
-        message = f"{client_id}:{client_secret}"
-        message_bytes = message.encode('ascii')
-        base64_bytes = base64.b64encode(message_bytes)
-        base64_message = base64_bytes.decode('ascii')
-
-        headers['Authorization'] = f"Basic {base64_message}"
         data['grant_type'] = "client_credentials"
+        data['client_id'] = client_id
+        data['client_secret'] = client_secret
 
-        r = requests.post(url, headers=headers, data=data, timeout=10)
+        r = requests.post(self.url, data=data, timeout=10)
+
         if r is None:
             print("Spotify request timed out", file=sys.stderr)
             sys.exit(101)
 
-        self._api_token = r.json()['access_token']
+        if r.status_code != 200:
+            print(f"An error occured retrieving bearer token from spotify with status code: {r.status_code}", file=sys.stderr)
+            print(f"{str(r.content)}", file=sys.stderr)
+            sys.exit(102)
+
+        out_json = r.json()
+
+        if "error" in out_json:
+            print("An error occured retrieving bearer token from spotify:", file=sys.stderr)
+            print(out_json['error'] + ":", file=sys.stderr)
+            if "error_description" in out_json:
+                print(out_json['error_description'], file=sys.stderr)
+            sys.exit(-1)
+
+        self._api_token = out_json['access_token']
 
     def send_request(self, url: str) -> str:
         """ Send request to spotify api and return a json object. """
