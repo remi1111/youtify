@@ -47,7 +47,7 @@ class SongData:
                 'disc total': self.disc_total}
 
     def get_data_as_csv(self) -> str:
-        return f"\"{self.song_artist}\";\"{self.song_name}\";\"{self.album_artist}\";\"{self.album_name}\";\"{self.release_date}\";\"{self.track_num}\";\"{self.track_total}\";\"{self.disc_num}\";\"{self.disc_total}\""
+        return f"\"{self.song_artist}\";\"{self.song_name}\";\"{self.album_artist}\";\"{self.album_name}\";\"{self.release_date}\";{self.track_num};{self.track_total};{self.disc_num};{self.disc_total}"
 
     def __str__(self) -> str:
         return f"{self.song_artist} - {self.song_name}\n" \
