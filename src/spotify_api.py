@@ -2,9 +2,10 @@
 import json
 import os
 import sys
-
-from dotenv import load_dotenv
 import requests
+
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
 
 class SongData:
@@ -108,6 +109,7 @@ class PlaylistData:
 class SpotifyAuth:
     """ Class for authentication on spotify. """
     _api_token: str = None
+    _expires: datetime = None
     url = "https://accounts.spotify.com/api/token"
 
     def __init__(self) -> None:
@@ -150,12 +152,20 @@ class SpotifyAuth:
             sys.exit(-1)
 
         self._api_token = out_json['access_token']
+        self._expires = datetime.now() + timedelta(seconds=out_json["expires_in"])
 
     def send_request(self, url: str) -> str:
         """ Send request to spotify api and return a json object. """
+        self.check_expire()
+
         res = requests.get(url=url, headers=self._headers, timeout=10)
         if res is None:
             print("Spotify request timed out", file=sys.stderr)
             sys.exit(101)
 
         return json.loads(res.content)
+
+    def check_expire(self):
+        """ Check if token expired and refreshes token if that is the case. """
+        if datetime.now() > self._expires:
+            self.get_token()
