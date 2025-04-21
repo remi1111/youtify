@@ -1,61 +1,57 @@
 """ Executable functions for main.py """
 import json
 import os
+import sys
 
-from src import spotify_api
+from src.spotify_api import SpotifyPlaylistData
 from src import get_avs
 from src import download
 from src import metadata
 # import yt_api
 
-def write_to_file(song_dict, filename):
-    """ Write a playlist dictionary to a file. """
-    with open(filename, 'w', encoding="utf-8") as file:
-        file.write(json.dumps(song_dict))
+class ExecFunc:
+    spotify_playlist_data: SpotifyPlaylistData = None
 
-def playlist_to_file(playlist, filename=None):
-    """ Turns a spotify playlist into a file.
-        Dictionary of info is from get_playlist """
-    token = spotify_api.get_token()
-    mydict = spotify_api.get_playlist(playlist, token, [])
-    if filename:
-        write_to_file(mydict, filename)
-    else:
-        print(mydict)
+    def __init__(self, playlist_id=None):
+        if playlist_id:
+            self.spotify_playlist_data = SpotifyPlaylistData(playlist_id)
+        else:
+            print("playlist id requried")
+            sys.exit(3)
 
-def playlist_to_yt_list(playlist, filename=None):
-    """ Turns a spotify playlist into a list of youtube video ids.
-        If no filename is given print to console. """
-    token = spotify_api.get_token()
-    mydict = spotify_api.get_playlist(playlist, token, [])
-    if filename:
-        write_to_file(mydict, filename)
-    else:
-        print(mydict)
+    def write_to_file_as_dict(self, filename):
+        """ Write a playlist dictionary to a file. """
+        with open(filename, 'w', encoding="utf-8") as file:
+            file.write(json.dumps(self.spotify_playlist_data.get_data_as_dict()))
 
-def playlist_to_yt_dict(playlist, filename=None):
-    """ Turns a spotify playlist into a dictionary.
-        This dictionary contains relevant info and their youtube ids.
-        If no filename is given print to console. """
-    verbose = False
-    if os.environ["VERBOSE"] == "1":
-        verbose = True
-    token = spotify_api.get_token()
-    dict1 = spotify_api.get_playlist(playlist, token, [])
-    mydict = get_avs.get_dict_spotify(dict1, verbose)
-    if filename:
-        write_to_file(mydict, filename)
-    else:
-        print(mydict)
+    def write_to_file_as_csv(self, filename):
+        """ Write a playlist dictionary to a file. """
+        with open(filename, 'w', encoding="utf-8") as file:
+            file.write(json.dumps(self.spotify_playlist_data.get_data_as_csv()))
 
-def full(playlist):
-    """ Downloads and tags all songs from a spotify playlist. """
-    verbose = False
-    if os.environ["VERBOSE"] == "1":
-        verbose = True
+    def get_spotify_playlist_data(self, playlist_id: str):
+        self.spotify_playlist_data = SpotifyPlaylistData(playlist_id)
 
-    token = spotify_api.get_token()
-    dict1 = spotify_api.get_playlist(playlist, token, [])
-    mydict = get_avs.get_dict_spotify(dict1, verbose)
-    download.download_ids(mydict, verbose)
-    metadata.tag_all(mydict)
+    def playlist_to_yt_list(self):
+        """ Turns a spotify playlist into a list of youtube video ids.
+            If no filename is given print to console. """
+        verbose = False
+        if os.environ["VERBOSE"] == "1":
+            verbose = True
+        return get_avs.get_dict_spotify(self.spotify_playlist_data, verbose)
+
+    def playlist_to_yt_dict(self):
+        """ Turns a spotify playlist into a dictionary.
+            This dictionary contains relevant info and their youtube ids.
+            If no filename is given print to console. """
+        pass
+
+    def full(self):
+        """ Downloads and tags all songs from a spotify playlist. """
+        verbose = False
+        if os.environ["VERBOSE"] == "1":
+            verbose = True
+
+        mydict = get_avs.get_dict_spotify(self.spotify_playlist_data, verbose)
+        download.download_ids(mydict, verbose)
+        metadata.tag_all(mydict)
