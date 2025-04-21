@@ -20,19 +20,19 @@ class SongData:
     track_total = None
     disc_total = None
 
-    def __init__(self, **kwargs):
-        self.album_artist = kwargs.get("album_artist")
-        self.album_name = kwargs.get("album_name")
-        self.release_date = kwargs.get("release_date")
-        self.song_artist = kwargs.get("song_artist")
-        self.song_name = kwargs.get("song_name")
-        self.track_num = kwargs.get("track_num")
-        self.disc_num = kwargs.get("disc_num")
-        self.track_total = kwargs.get("track_total")
-        self.disc_total = kwargs.get("disc_total")
+    def __init__(self, song_dict):
+        self.album_artist = song_dict['track']['album']['artists'][0]['name']
+        self.album_name = song_dict['track']['album']['name']
+        self.release_date = song_dict['track']['album']['release_date']
+        self.song_artist = song_dict['track']['artists'][0]['name']
+        self.song_name = song_dict['track']['name']
+        self.track_num = song_dict['track']['track_number']
+        self.disc_num = song_dict['track']['disc_number']
+        self.track_total = song_dict['track']['album']['total_tracks']
+        self.disc_total = 1
 
         if self.release_date:
-            self.release_year = kwargs.get("release_date")[:4]
+            self.release_year = self.release_date[:4]
 
     def __str__(self):
         return f"{self.song_artist} - {self.song_name}\n" \
@@ -70,16 +70,7 @@ class PlaylistData:
     def analyze_playlist_data(self, json_data):
         """ Stores data for each song in a SongData object. """
         for song in json_data['items']:
-            album_artist = song['track']['album']['artists'][0]['name']
-            album_name = song['track']['album']['name']
-            release_date = song['track']['album']['release_date']
-            song_artist = song['track']['artists'][0]['name']
-            song_name = song['track']['name']
-            track_num = song['track']['track_number']
-            disc_num = song['track']['disc_number']
-            track_total = song['track']['album']['total_tracks']
-
-            song_data = SongData(album_artist=album_artist, album_name=album_name, release_date=release_date, song_artist=song_artist, song_name=song_name, track_num=track_num, track_total=track_total, disc_num=disc_num, disc_total=1)
+            song_data = SongData(song)
             self.song_list.append(song_data)
 
     def __str__(self):
