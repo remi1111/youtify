@@ -58,7 +58,7 @@ class SongData:
                 f"Disc: {self.disc_num}/{self.disc_total}"
 
 
-class PlaylistData:
+class SpotifyPlaylistData:
     """ Class that retrieves songs from spotify and puts them in song_list. """
     song_list: list[SongData] = []
     playlist_id: str = None
@@ -73,7 +73,7 @@ class PlaylistData:
         if not playlist_url:
             playlist_url = f"https://api.spotify.com/v1/playlists/{self.playlist_id}/tracks"
 
-        json_data = self._auth.send_request(playlist_url)
+        json_data = self._auth.send_get_request(playlist_url)
         self.analyze_playlist_data(json_data)
 
         next_url = json_data['next']
@@ -152,7 +152,7 @@ class SpotifyAuth:
         self._api_token = out_json['access_token']
         self._expires = datetime.now() + timedelta(seconds=out_json["expires_in"])
 
-    def send_request(self, url: str) -> str:
+    def send_get_request(self, url: str) -> str:
         """ Send request to spotify api and return a json object. """
         self.check_expire()
 
@@ -160,6 +160,11 @@ class SpotifyAuth:
         if res is None:
             print("Spotify request timed out", file=sys.stderr)
             sys.exit(101)
+
+        if res.status_code != 200:
+            print(f"An error occured retrieving bearer token from spotify with status code: {res.status_code}", file=sys.stderr)
+            print(f"{str(res.content)}", file=sys.stderr)
+            sys.exit(102)
 
         return json.loads(res.content)
 
