@@ -121,11 +121,9 @@ class SpotifyAuth:
 
     def get_token(self) -> None:
         """ Retrieve spotify api token. """
-        # Retrieve ID and secret from .env
         client_id = os.getenv("SPOTIFY_CLIENT_ID")
         client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-        # Authorization
         data = {}
         data['grant_type'] = "client_credentials"
         data['client_id'] = client_id
