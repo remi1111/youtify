@@ -5,67 +5,69 @@ import os
 
 import requests
 
-def api_call(page):
-    """ Handles youtube API calls.
-        Exits runtime upon failure.
-        page: API call.
-        returns: data from API call """
-    data = requests.get(page, timeout=10)
-    if data is None:
-        print("Youtube request timed out", file=sys.stderr)
-        sys.exit(101)
 
-    if data.status_code != 200:
-        print("Youtube request not successfull", file=sys.stderr)
-        print(data.content, file=sys.stderr)
-        sys.exit(501)
-    else:
-        return data
+class YoutubeApi:
+    yt_api_key = None
 
-def get_upload_list(channel_id):
-    """ Quick channel to user uploads. """
-    if channel_id[:2] != "UC":
-        print("Channel ID did not start with UC", file=sys.stderr)
-        sys.exit(1)
-    s = list(channel_id)[1] = "U"
-    return "".join(s)
+    def __init__(self) -> None:
+        self.yt_api_key = os.getenv("YOUTUBE_API")
 
-def get_upload_list_call(channel_id, verbose=False):
-    """ Api call for channel to user uploads. """
-    if channel_id[:2] != "UC":
-        print("Channel ID did not start with UC", file=sys.stderr)
-        sys.exit(1)
-    yt_api_key = os.getenv("YOUTUBE_API")
-    data = api_call("https://www.googleapis.com/youtube/v3/channels?id=" +
-                    channel_id + "&key=" +
-                    yt_api_key + "&part=contentDetails,statistics").content
+    def api_call(self, url: str):
+        """ Handles youtube API calls.
+            Exits runtime upon failure.
+            url: API call.
+            returns: data from API call """
+        url += f"&key={self.yt_api_key}"
+        data = requests.get(url, timeout=10)
+        if data is None:
+            print("Youtube request timed out", file=sys.stderr)
+            sys.exit(101)
 
-    if verbose:
-        video_count = json.loads(data)["items"][0]["statistics"]["videoCount"]
-        print("videos: " + video_count)
-    return json.loads(data)["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+        if data.status_code != 200:
+            print("Youtube request not successfull", file=sys.stderr)
+            print(data.content, file=sys.stderr)
+            sys.exit(501)
+        else:
+            return data
 
-def get_video_list(playlist_id, video_array, page_token=None):
-    """ Retrieves a list of videos from a youtube playlist. """
-    yt_api_key = os.getenv("YOUTUBE_API")
-    if page_token:
-        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" +
-                        playlist_id + "&key=" + yt_api_key +
-                        "&part=snippet&maxResults=50&regionCode=nl&pageToken=" +
-                        page_token).content
-    else:
-        data = api_call("https://www.googleapis.com/youtube/v3/playlistItems?playlistId=" +
-                        playlist_id + "&key=" + yt_api_key +
-                        "&part=snippet&maxResults=50&regionCode=nl").content
+    def user_channel_check(self, channel_id: str) -> None:
+        if channel_id[:2] != "UC":
+            print("Channel ID did not start with UC", file=sys.stderr)
+            sys.exit(1)
 
-    new_array = video_array + json.loads(data)["items"]
+    def get_upload_list(self, channel_id: str) -> str:
+        """ Retrieves user uploads from user channel. """
+        self.user_channel_check(channel_id)
+        s = list(channel_id)
+        s[1] = "U"
+        return "".join(s)
 
-    try:
-        page_token = json.loads(data)["nextPageToken"]
-    except KeyError:
-        return new_array
+    def get_upload_list_call(self, channel_id: str, verbose: bool = False):
+        """ Api call for channel to user uploads. """
+        self.user_channel_check(channel_id)
+        url = f"https://www.googleapis.com/youtube/v3/channels?id={channel_id}&part=contentDetails,statistics"
+        data = self.api_call(url).content
 
-    return get_video_list(playlist_id, new_array, page_token)
+        if verbose:
+            video_count = json.loads(data)["items"][0]["statistics"]["videoCount"]
+            print("videos: " + video_count)
+        return json.loads(data)["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+    def get_video_list(self, playlist_id: str, video_array: list, page_token: str = None):
+        """ Retrieves a list of videos from a youtube playlist. """
+        url = f"https://www.googleapis.com/youtube/v3/playlistItems?playlistId={playlist_id}&part=snippet&maxResults=50&regionCode=nl"
+        if page_token:
+            url += f"&pageToken={page_token}"
+        data = self.api_call(url).content
+
+        new_array = video_array + json.loads(data)["items"]
+
+        try:
+            page_token = json.loads(data)["nextPageToken"]
+        except KeyError:
+            return new_array
+
+        return self.get_video_list(playlist_id, new_array, page_token)
 
 def get_playlist_by_channel(channel_id):
     """ Retrievs all playlists of a channel. """
