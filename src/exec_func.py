@@ -9,6 +9,7 @@ from src import download
 from src import metadata
 # import yt_api
 
+
 class ExecFunc:
     spotify_playlist_data: SpotifyPlaylistData = None
 
