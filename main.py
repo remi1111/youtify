@@ -62,12 +62,12 @@ def usage():
     print("-h, --help: Prints this message.")
     print("-v, --verbose: Prints important output during runtime.")
     print("-F, --to-file <1> <2>: outputs spotify playlist <1> info to specified file <2>.")
-    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube video \
-ID's to specified file <2>.")
-    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant \
-info and their \n\t\t\t youtube video ID's to specified file <2>.")
-    print("-f, --full <1>: Download audio files for all songs in \
-spotify playlist <1> \n\t\t\t and put them in the audio folder.")
+    print("-L, --to-list <1> <2>: outputs spotify playlist <1> as a list of youtube " \
+    "video ID's to specified file <2>.")
+    print("-D, --to-dict <1> <2>: outputs spotify playlist <1> as a dictionary of relevant " \
+    "info and their youtube video ID's to specified file <2>.")
+    print("-f, --full <1>: Download audio files for all songs in spotify playlist <1> "
+    "and put them in the audio folder.")
 
 if __name__ == "__main__":
     main()
