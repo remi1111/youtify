@@ -61,7 +61,7 @@ class YoutubeApi:
 
     def get_video_list(self, playlist_id: str, video_array: list, page_token: str = None) -> list:
         """ Retrieves a list of videos from a youtube playlist. """
-        url = f"https://www.googleapis.com/youtube/v3/playlistItems?playlistId={playlist_id}&part=snippet&maxResults=50&regionCode=nl"
+        url = f"https://www.googleapis.com/youtube/v3/playlistItems?playlistId={playlist_id}&part=snippet&maxResults=50&regionCode={self.region}"
         if page_token:
             url += f"&pageToken={page_token}"
         data = self.api_call(url).content
@@ -144,9 +144,9 @@ class YoutubeApi:
 
         if 'regionRestriction' in cont:
             if('allowed' in cont['regionRestriction'] and
-            'NL' not in cont['regionRestriction']['allowed']):
+            self.region not in cont['regionRestriction']['allowed']):
                 return [False, view_count]
             if('blocked' in cont['regionRestriction'] and
-            'NL' in cont['regionRestriction']['blocked']):
+            self.region in cont['regionRestriction']['blocked']):
                 return [False, view_count]
         return [True, view_count]
