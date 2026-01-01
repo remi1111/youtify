@@ -21,7 +21,7 @@ class SongData:
     track_total: int = None
     disc_total: int = None
 
-    def __init__(self, song_dict: str) -> None:
+    def __init__(self, song_dict: dict) -> None:
         self.album_artist = song_dict['track']['album']['artists'][0]['name']
         self.album_name = song_dict['track']['album']['name']
         self.release_date = song_dict['track']['album']['release_date']
@@ -168,7 +168,7 @@ class SpotifyAuth:
 
         return json.loads(res.content)
 
-    def check_expire(self):
+    def check_expire(self) -> None:
         """ Check if token expired and refreshes token if that is the case. """
         if datetime.now() < self._expires:
             self.get_token()
