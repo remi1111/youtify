@@ -3,7 +3,7 @@ import sys
 import os
 import getopt
 from dotenv import load_dotenv
-from src import exec_func
+from src.exec_func import ExecFunc
 
 def main():
     """ Main function. """
@@ -37,22 +37,26 @@ def main():
                 if len(args) != 2:
                     print(f"{opt} requires 2 parameters", file=sys.stderr)
                     sys.exit(3)
-                exec_func.playlist_to_file(args[0], args[1])
+                exec_func = ExecFunc(args[0])
+                exec_func.write_to_file_as_dict(args[1])
             case "-L" | "--to-list":
                 if len(args) != 2:
                     print(f"{opt} requires 2 parameters", file=sys.stderr)
                     sys.exit(3)
-                exec_func.playlist_to_yt_list(args[0], args[1])
+                exec_func = ExecFunc(args[0])
+                exec_func.playlist_to_yt_list(args[1])
             case "-D" | "--to-dict":
                 if len(args) != 2:
                     print(f"{opt} requires 2 parameters", file=sys.stderr)
                     sys.exit(3)
-                exec_func.playlist_to_yt_dict(args[0], args[1])
+                exec_func = ExecFunc(args[0])
+                exec_func.playlist_to_yt_dict(args[1])
             case "-f" | "--full":
                 if len(args) != 1:
                     print(f"{opt} requires 1 parameter", file=sys.stderr)
                     sys.exit(3)
-                exec_func.full(args[0])
+                exec_func = ExecFunc(args[0])
+                exec_func.full()
             case _:
                 print("unhandled option", file=sys.stderr)
                 sys.exit(-1)
