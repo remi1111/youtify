@@ -75,8 +75,3 @@ def usage():
 
 if __name__ == "__main__":
     main()
-
-    # PLAYLIST = "0hxTtbe3Kxll0hKBZR09LV"
-    # test_playlist = "10GvxKrWBqtUDD8PtRUnsJ"
-
-    # exec_func.playlist_to_file(PLAYLIST)
