@@ -1,6 +1,6 @@
 *.pyc
 *.pyo
-*.txt
+examples.txt
 .env
 test.py
 /audio
